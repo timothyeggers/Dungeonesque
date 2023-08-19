@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,20 +17,15 @@ public class PlayerController : MonoBehaviour
     private float rotationSpeed = 5.0f;
 
     [SerializeField]
-    private LayerMask interactMask;
+    private Interactable[] interactables;
 
-    [SerializeField]
-    private LayerMask moveableMask = 1;
-
-
-    private bool running = false;
     private NavMeshAgent agent;
+    private bool running = false;
     private Vector3? destination;
 
     private float[] angles = new float[] { 80f, 45f, 20f };
     private float speed = 0f;
 
-    private bool canInteract = true;
 
     // Start is called before the first frame update                            
     void Start()
@@ -43,26 +39,17 @@ public class PlayerController : MonoBehaviour
     {
         Debug.DrawRay(transform.position, transform.forward * 3);
 
-        if (Input.GetMouseButton(0))
-        {
+        var interacted = Input.GetMouseButtonDown(0);
+        var interact = Input.GetMouseButton(0);
+
+        if (interact) {
             RaycastHit hit;
-            if (canInteract && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, interactMask))
-            {
-                Debug.Log("Clicked on: " + hit.collider.gameObject);
-                StartCoroutine(interactCooldown());
 
-
-                var obj = hit.collider.gameObject;
-                if (obj.TryGetComponent<EnemyController>(out var controller))
-                {
-                    controller.Hit(this.gameObject);
-                }
-            }
-            else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, moveableMask))
+            foreach (var interactable in this.interactables)
             {
-                agent.SetDestination(hit.point);
+                print(interactable.Interact(out hit));
+
             }
-            
         }
 
         if (Input.GetMouseButton(1))
@@ -114,10 +101,53 @@ public class PlayerController : MonoBehaviour
         return 1.0f;
     }
 
-    IEnumerator interactCooldown()
+    public void Move(NavMeshAgent agent)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+// problem - we want to click on an interactable, have it walk to it, and interact after reaching.
+// we want to click on an enemy, and attack an enemy if its in range
+// both of these require a range of interaction, and a cooldown (aka how often you can interact)
+// we could build a struct Interact, which accepts a physics layer mask, and cooldown, and range, and also accept a callback function
+
+public delegate bool Interact(int hwnd, int lParam);
+
+[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Interactable", order = 1)]
+class Interactable : ScriptableObject
+{
+    public LayerMask layerMask;
+    public float coolDown;
+    public float range;
+
+    private bool canInteract;
+
+    public bool CanInteract { get { return canInteract; } } 
+
+    public IEnumerator CooldownRoutine()
     {
         canInteract = false;
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(coolDown);
         canInteract = true;
+    }
+
+    public virtual bool Interact(out RaycastHit hit)
+    {
+        var interacted = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, layerMask);
+        return interacted;
+    }
+}
+
+class Moveable : Interactable
+{
+    public override bool Interact(out RaycastHit hit)
+    {
+        var interacted = base.Interact(out hit);
+        if (interacted)
+        {
+
+        }
+        return interacted;
     }
 }

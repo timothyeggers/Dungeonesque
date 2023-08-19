@@ -1,0 +1,8 @@
+ScriptableObjects are interesting, because they preserve states and are a shared reference, rather than a value type.
+ScriptableObjects are not only reference types, but are also serialized, meaning the state is saved even after termination of the game.
+
+For example, if you have a public float health = 10, you take two hits, and set it to health 8, that health variable is saved as health 8 when program terminates.
+If you run the game again, and take two more hits, you'll be at 6 health.
+
+In order to not preserve state, you can mark a field as either static, or [NonSerialized].
+NonSerialized fields must be given a default value, otherwise ScriptableObjects left in a disposed state will throw an error when re initialized.
