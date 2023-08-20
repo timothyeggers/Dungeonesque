@@ -11,7 +11,8 @@ public enum Priorities
     Aggressor,
     Visual,
     Audio,
-    Prey
+    Prey,
+    Other
 }
 
 // Base interface for all objects detected by tower

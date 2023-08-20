@@ -7,21 +7,19 @@ using UnityEngine.UIElements;
 
 public class Entity : MonoBehaviour
 {
-    [SerializeField]
-
-    https://www.youtube.com/watch?v=7_dyDmF0Ktw
-    List<ITarget> targets = new List<ITarget>();
-
     NavMeshAgent agent;
+    VisualDetector visualDetector;
     StateMachine machine;
-    TargetGenerator targetGenerator;
+    Priorities priority = Priorities.Other;
+
+    void At(IState from, IState to, Func<bool> predicate) => machine.AddTransition(from, to, predicate);
 
     void Awake()
     {
         #region Get Component References
         
         agent = GetComponent<NavMeshAgent>();
-        targetGenerator = GetComponent<TargetGenerator>();
+        visualDetector = GetComponent<VisualDetector>();
 
         #endregion
 
@@ -29,24 +27,29 @@ public class Entity : MonoBehaviour
 
         // transition predicates
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.A);
-        Func<bool> BeginInvestigateVisual = () => Input.GetMouseButtonDown(0);
-        Func<bool> BeginInvestigateAudio = () => Input.GetMouseButtonDown(1);
+        Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
+        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;
 
         // initialize states
         IdleState idle = new IdleState();
-        WanderState wander = new WanderState(agent, new RangeFloat(5, 5), 5f, 50f);
+        WanderState wander = new WanderState(agent, new RangeFloat(0.25f, 5), 5f, 20f);
         InvestigateState investigate = new InvestigateState(agent, new RangeFloat(5, 5), 5f, 50f);
 
-        // add transitions
-        void At(IState from, IState to, Func<bool> predicate) => machine.AddTransition(from, to, predicate);
 
+        // add static transitions
         At(idle, wander, BeginWander);
         At(wander, investigate, BeginInvestigateVisual);
-        At(wander, investigate, BeginInvestigateAudio);
 
         // set default state
         machine.SetState(idle);
     }
+
+    public void SetPriority(Component sender, object data)
+    {
+        if (sender.GetType() == typeof(VisualNotifier)) {
+            priority = Priorities.Visual;
+        }
+    } 
 
     void Update()
     {

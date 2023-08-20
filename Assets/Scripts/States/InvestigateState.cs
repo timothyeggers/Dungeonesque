@@ -42,7 +42,8 @@ public class InvestigateState : IState
 
     public void OnEnter()
     {
-
+        Debug.Log("Should chase player.");
+        agent.SetDestination(GameObject.FindGameObjectWithTag("Player").transform.position);
     }
 
     public void OnExit()
@@ -52,23 +53,7 @@ public class InvestigateState : IState
 
     public void Update()
     {
-        if (waitFor <= 0f && queueDestination != null)
-        {
-            agent.SetDestination((Vector3) queueDestination);
-            queueDestination = null;
-        }
-        else
-        {
-            waitFor -= Time.deltaTime;
-        }
-
-        if (waitFor <= 0f && DestinationReached()) // && queueDestination == null
-        {
-            waitFor = UnityEngine.Random.Range(waitTime.x, waitTime.y);
-            // then enter wander state
-            //queueDestination = GetNextPosition();
-            // instead maybe we exit state if nothing is found
-        }
+        agent.SetDestination(GameObject.FindGameObjectWithTag("Player").transform.position);
     }
 
     public void SetTargetPosition(Vector3 position)
