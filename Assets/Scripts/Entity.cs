@@ -28,7 +28,8 @@ public class Entity : MonoBehaviour
         // transition predicates
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.A);
         Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
-        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;
+/*        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;*/
+        Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
 
         // initialize states
         IdleState idle = new IdleState();
@@ -39,6 +40,7 @@ public class Entity : MonoBehaviour
         // add static transitions
         At(idle, wander, BeginWander);
         At(wander, investigate, BeginInvestigateVisual);
+        At(investigate, wander, StopInvestigation);
 
         // set default state
         machine.SetState(idle);
