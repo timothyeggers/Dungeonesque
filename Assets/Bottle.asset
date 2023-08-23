@@ -9,11 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9c9d2a1dc9403514aa92dfb860d2c052, type: 3}
   m_Name: Bottle
-  m_EditorClassIdentifier: Assembly-CSharp::Bottle
-  _damage: 0
-  _fireRate: 0.5
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+  type: 1
+  description: 
+  _damage: 1
+  _fireRate: 0.75
   _ammo: 1
   _capacity: 1
   _stowTime: 0.25

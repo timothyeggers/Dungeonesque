@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using Object = System.Object;
@@ -16,7 +17,10 @@ public class StateMachine
    
    private static List<Transition> EmptyTransitions = new List<Transition>(0);
 
-   public void Update()
+
+    public void At(IState from, IState to, Func<bool> predicate) => AddTransition(from, to, predicate);
+
+    public void Update()
    {
       var transition = GetTransition();
       if (transition != null)

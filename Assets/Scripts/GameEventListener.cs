@@ -7,7 +7,16 @@ using UnityEngine.Events;
 [System.Serializable]
 public class CustomGameEvent : UnityEvent<Component, object> {}
 
-public class GameEventListener : MonoBehaviour
+public class WeaponEvent : UnityEvent<DefaultWeapon> {}
+
+
+public interface IGameEventListener<T0, T1>
+{ 
+    public void OnEventRaised(T0 sender, T1 data);
+}
+
+
+public class GameEventListener : MonoBehaviour, IGameEventListener<Component, object>
 {
 
     [Tooltip("Event to register with.")]
@@ -27,5 +36,4 @@ public class GameEventListener : MonoBehaviour
     public void OnEventRaised(Component sender, object data) {
         response.Invoke(sender, data);
     }
-
 }

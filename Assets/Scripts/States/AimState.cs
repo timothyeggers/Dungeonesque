@@ -8,14 +8,11 @@ using Object = System.Object;
 public class AimState : IState
 {
     CharacterController controller;
-    float speed;
-    float runMod;
+    float aimMod;
 
-    public AimState(CharacterController controller, float speed = 6f, float runMod = 1.5f)
+    public AimState(CharacterController controller)
     {
         this.controller = controller;
-        this.speed = speed;
-        this.runMod = runMod;
     }
 
     public void OnEnter()
@@ -39,9 +36,6 @@ public class AimState : IState
 
         input_direction.x = horizontal;
         input_direction.z = vertical;
-
-        controller?.Move(input_direction * speed * (running ? runMod : 1) * Time.deltaTime);
-        controller.Move(Time.deltaTime * Physics.gravity);
     }
 }
 
