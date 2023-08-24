@@ -21,11 +21,11 @@ public class WeaponSelector : MonoBehaviour
     {
         if (Input.mouseScrollDelta.y > 0)
         {
-            Equip(1);
+            Equip(equipped + 1);
         }
         if (Input.mouseScrollDelta.y < 0)
         {
-            Equip(0);
+            Equip(equipped - 1);
         }
 
     }
@@ -43,10 +43,9 @@ public class WeaponSelector : MonoBehaviour
     {
         if (equipped > 0)
         {
-            var equipable = inventory.Get(ItemType.Equipable, equipped);
-            if (equipable.GetType() == typeof(IWeapon))
+            var equipable = inventory.GetWeaponOrNext(equipped);
+            if (equipable is IWeapon weapon)
             {
-                var weapon = (IWeapon)equipable;
                 yield return new WaitForSeconds(weapon.stowTime);
                 equipped = 0;
 
@@ -56,12 +55,12 @@ public class WeaponSelector : MonoBehaviour
 
         if (queueEquip is int queue)
         {
-            var equipable = inventory.Get(ItemType.Equipable, queue);
-            if (equipable is IWeapon)
+            var equipable = inventory.GetWeaponOrNext(queue);
+            if (equipable is IWeapon weapon)
             {
-                var weapon = (IWeapon)equipable;
                 yield return new WaitForSeconds(weapon.unstowTime);
                 equipped = queue;
+                queueEquip = null;
 
                 Debug.Log($"Equipped: {weapon}");
             }

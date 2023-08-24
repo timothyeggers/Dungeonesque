@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Throwable : MonoBehaviour
 {
-    [SerializeField] private DefaultWeapon weaponStats;
+    [SerializeField] private DefaultWeaponObject weaponStats;
 
 
 }

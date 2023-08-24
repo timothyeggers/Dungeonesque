@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Fists", menuName = "Inventory/Fists")]
-public class DefaultWeapon : ItemObject, IWeapon
+public class DefaultWeaponObject : ItemObject, IWeapon
 {
     [SerializeField]
     private float _damage = 5f;
@@ -37,6 +37,6 @@ public class DefaultWeapon : ItemObject, IWeapon
 
     public void Awake()
     {
-        type = ItemType.Equipable;
+        type = ItemType.Weapon;
     }
 }

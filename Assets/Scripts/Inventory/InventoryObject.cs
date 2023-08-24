@@ -1,3 +1,4 @@
+using OpenCover.Framework.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,11 +12,13 @@ using static UnityEngine.EventSystems.EventTrigger;
 [CreateAssetMenu(fileName = "Inventory Object")]
 public class InventoryObject : ScriptableObject
 {
-/*    [SerializeField]
-    List<WeaponSO> weapons = new List<WeaponSO>();
-*/
-
-    public Dictionary<ItemType, List<ItemObject>> items = new Dictionary<ItemType, List<ItemObject>>();
+    /*    [SerializeField]
+        List<WeaponSO> weapons = new List<WeaponSO>();
+    */
+    [SerializeField]
+    private List<ItemObject> items = new List<ItemObject>();
+    
+    /*public Dictionary<ItemType, List<ItemObject>> items = new Dictionary<ItemType, List<ItemObject>>();*/
 
 /*    [NonSerialized]
     WeaponSO empty;
@@ -27,26 +30,29 @@ public class InventoryObject : ScriptableObject
 */
     public void Add(ItemObject item)
     {
-        if (items.ContainsKey(item.type)) {
-            items[item.type].Add(item);
-        } else
-        {
-            items[item.type] = new List<ItemObject>() { item };
-        }
+        items.Add(item);
     }
 
-    public ItemObject Get(ItemType type, int index)
+    public List<ItemObject> GetWeapons()
     {
-        if (items.ContainsKey(type))
-        {
-            var items = this.items[type];
+        var filtered = items.FindAll(x => x != null && x.type == ItemType.Weapon);
+        filtered.Insert(0, CreateInstance<DefaultWeaponObject>());
 
-            if (index > items.Count) return items[-1];
-            if (index < 0) return items[0];
-
-            return items[index];
-        }
-        return CreateInstance<DefaultWeapon>();
-        
+        return filtered;
     }
+
+    public ItemObject GetWeaponOrNext(int index)
+    {
+        var filtered = GetWeapons();
+        
+        if (index > filtered.Count - 1)
+        {
+            var remainder = index % filtered.Count;
+            return filtered[remainder];
+        }
+
+        return filtered[index]; 
+    }
+
+    public ItemObject Get(int index) { return items[index]; }
 }

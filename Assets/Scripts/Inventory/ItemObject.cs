@@ -5,7 +5,7 @@ using UnityEngine;
 public enum ItemType
 {
     Default,
-    Equipable
+    Weapon
 }
 
 public class ItemObject : ScriptableObject
