@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     StateMachine machine;
     StateMachine inventory;

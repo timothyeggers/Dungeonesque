@@ -9,10 +9,6 @@ public interface IWeapon
     public int ammo { get; set; }
 
     public int capacity { get; set; }
-
-    public float stowTime { get; set; }
-
-    public float unstowTime { get; set; }
 }
 
 

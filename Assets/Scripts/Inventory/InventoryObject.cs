@@ -12,22 +12,9 @@ using static UnityEngine.EventSystems.EventTrigger;
 [CreateAssetMenu(fileName = "Inventory Object")]
 public class InventoryObject : ScriptableObject
 {
-    /*    [SerializeField]
-        List<WeaponSO> weapons = new List<WeaponSO>();
-    */
     [SerializeField]
     private List<ItemObject> items = new List<ItemObject>();
     
-    /*public Dictionary<ItemType, List<ItemObject>> items = new Dictionary<ItemType, List<ItemObject>>();*/
-
-/*    [NonSerialized]
-    WeaponSO empty;
-
-    private void OnEnable()
-    {
-        empty = CreateInstance<WeaponSO>();
-    }
-*/
     public void Add(ItemObject item)
     {
         items.Add(item);
@@ -36,7 +23,7 @@ public class InventoryObject : ScriptableObject
     public List<ItemObject> GetWeapons()
     {
         var filtered = items.FindAll(x => x != null && x.type == ItemType.Weapon);
-        filtered.Insert(0, CreateInstance<DefaultWeaponObject>());
+        filtered.Insert(0, CreateInstance<DefaultItemObject>());
 
         return filtered;
     }
@@ -50,7 +37,7 @@ public class InventoryObject : ScriptableObject
             var remainder = index % filtered.Count;
             return filtered[remainder];
         }
-
+        
         return filtered[index]; 
     }
 

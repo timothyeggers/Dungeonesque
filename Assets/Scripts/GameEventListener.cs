@@ -7,7 +7,7 @@ using UnityEngine.Events;
 [System.Serializable]
 public class CustomGameEvent : UnityEvent<Component, object> {}
 
-public class WeaponEvent : UnityEvent<DefaultWeaponObject> {}
+/*public class WeaponEvent : UnityEvent<DefaultWeaponObject> {}*/
 
 
 public interface IGameEventListener<T0, T1>
