@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Default Weapon Object", menuName = "Weapons/Default Weapon Object")]
+/*[CreateAssetMenu(fileName = "Default Weapon Object", menuName = "Weapons/Default Weapon Object")]
 public class DefaultWeaponObject : ItemObject, IWeapon
 {
     [SerializeField]
@@ -27,4 +27,4 @@ public class DefaultWeaponObject : ItemObject, IWeapon
     public int capacity { get => _capacity; set => _capacity = value; }
 
     public virtual void Attack(GameObject parent) { Debug.Log("Should attack.");  }
-}
+}*/

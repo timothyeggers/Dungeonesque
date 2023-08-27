@@ -10,7 +10,7 @@ public interface IWeapon
 
     public int capacity { get; set; }
 
-    public void Attack(GameObject parent);
+    public void Attack(GameObject sender);
 }
 
 

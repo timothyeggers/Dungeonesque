@@ -11,7 +11,9 @@ using static UnityEditor.Progress;
 
 public class WeaponSelector : MonoBehaviour
 {
-    public GameObject EquippedPrefab { get; private set; }     
+    public ItemObject Equipped { get; private set; }
+
+    public GameObject EquippedPrefab { get; private set; }
 
     [SerializeField]
     InventoryObject inventory;
@@ -20,23 +22,29 @@ public class WeaponSelector : MonoBehaviour
     private ItemObject emptyWeapon;
 
     private List<GameObject> cachedPrefabs = new List<GameObject>();
-
-    
-    int equipped = 0;
-    int? queueEquip = null;
-
+        
+    int current;
+    int? queue;
 
     private void Update()
     {
         if (Input.mouseScrollDelta.y > 0)
         {
-            Equip(equipped + 1);
+            Equip(current + 1);
         }
         if (Input.mouseScrollDelta.y < 0)
         {
-            Equip(equipped - 1);
+            Equip(current - 1);
         }
 
+    }
+
+    public void UseWeapon(GameObject sender)
+    {
+        if (Equipped is IWeapon weapon)
+        {
+            weapon.Attack(sender);
+        }
     }
     
     public ItemObject GetWeaponOrNext(int index)
@@ -55,46 +63,57 @@ public class WeaponSelector : MonoBehaviour
 
     public void Equip(int index)
     {
-        if (queueEquip != null) return;
-        if (index == equipped) return;
+        if (queue != null) return;
+        if (index == current) return;
 
-        queueEquip = index;
+        queue = index;
         StartCoroutine(EquipRoutine());
     }
 
     IEnumerator EquipRoutine()
     {
-        var weapon = GetWeaponOrNext(equipped);
+        var weapon = GetWeaponOrNext(current);
         yield return new WaitForSeconds(weapon.stowTime);
 
-        equipped = 0;
+        // Reset to empty hands
+        current = 0;
+        Equipped = emptyWeapon;
+
         if (EquippedPrefab) EquippedPrefab.SetActive(false);
         EquippedPrefab = null;
         
-        if (queueEquip is int queue)
+        // If there's a weapon in the equip queue
+        if (queue is int next)
         {
-            weapon = GetWeaponOrNext(queue);
+            weapon = GetWeaponOrNext(next);
             yield return new WaitForSeconds(weapon.unstowTime);
-            
-            equipped = queue;
-            queueEquip = null;
-            Debug.Log($"Equipped: {weapon}, {equipped}");
-            
+                        
+            current = next;
+            queue = null;
+
+            Equipped = weapon;
+
             if (weapon.prefab == null) yield break;
 
-            var prefab = cachedPrefabs.Find(x => x.scene.IsValid() && x.GetInstanceID() == weapon.prefabInstanceId);
-            
-            if (prefab != null)
-            {
-                EquippedPrefab = prefab;
-                EquippedPrefab.SetActive(true);
-            } else
-            {
-                EquippedPrefab = Instantiate(weapon.prefab);
-                EquippedPrefab.SetActive(true);
-                cachedPrefabs.Add(EquippedPrefab);
-                weapon.prefabInstanceId = EquippedPrefab.GetInstanceID();
-            }
+            CreateWeaponPrefab(weapon);
+        }
+    }
+
+    private void CreateWeaponPrefab(ItemObject weapon)
+    {
+        var prefab = cachedPrefabs.Find(x => x.scene.IsValid() && x.GetInstanceID() == weapon.prefabInstanceId);
+
+        if (prefab != null)
+        {
+            EquippedPrefab = prefab;
+            EquippedPrefab.SetActive(true);
+        }
+        else
+        {
+            EquippedPrefab = Instantiate(weapon.prefab);
+            EquippedPrefab.SetActive(true);
+            cachedPrefabs.Add(EquippedPrefab);
+            weapon.prefabInstanceId = EquippedPrefab.GetInstanceID();
         }
     }
 }
