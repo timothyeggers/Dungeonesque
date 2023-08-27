@@ -33,7 +33,7 @@ public class VisualDetector : MonoBehaviour
             direction = Quaternion.Euler(0, transform.eulerAngles.y, 0) * direction;
 
             var ray = new Ray(transform.position, direction);
-            Debug.DrawRay(ray.origin, ray.direction * range, Color.red);
+            var range = this.range;
 
             if (Physics.Raycast(ray, out var hit, range, monitorLayer))
             {
@@ -41,7 +41,10 @@ public class VisualDetector : MonoBehaviour
                 {
                     notifier.Spotted(this, hit);
                 }
+                range = Vector3.Distance(ray.origin, hit.point);
             }
+
+            Debug.DrawRay(ray.origin, ray.direction * range, Color.red);
         }
     }
 

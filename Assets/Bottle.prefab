@@ -11,14 +11,13 @@ GameObject:
   - component: {fileID: 3989120370327340825}
   - component: {fileID: 6992102109895590051}
   - component: {fileID: 7746857994144564779}
-  - component: {fileID: 3797042231424012519}
   m_Layer: 0
   m_Name: Bottle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3989120370327340825
 Transform:
   m_ObjectHideFlags: 0
@@ -84,16 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3797042231424012519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7038547041593145697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acd4d60d77870a8419884475b76f8e49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponStats: {fileID: 11400000, guid: 6715f42afbd741f4cb559a4aa0978c0a, type: 2}

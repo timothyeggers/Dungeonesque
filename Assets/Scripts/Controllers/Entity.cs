@@ -43,7 +43,7 @@ public class Entity : MonoBehaviour
         At(investigate, wander, StopInvestigation);
 
         // set default state
-        machine.SetState(idle);
+        machine.SetState(wander);
     }
 
     public void SetPriority(Component sender, object data)

@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     StateMachine inventory;
 
     CharacterController controller;
+    WeaponSelector weaponSelector;
 
     void Awake()
     {
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
        // visualDetector = GetComponent<VisualDetector>();
+       weaponSelector = GetComponent<WeaponSelector>();
 
         #endregion
 
@@ -57,5 +59,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         machine.Update();
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            weaponSelector.Equipped.SendMessage("Attack");
+        }
     }
 }

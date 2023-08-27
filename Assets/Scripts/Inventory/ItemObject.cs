@@ -12,7 +12,7 @@ public enum ItemType
 public class ItemObject : ScriptableObject
 {
     public GameObject prefab;
-    [NonSerialized] public bool prefabInScene = false;
+    [NonSerialized] public int prefabInstanceId;
     public ItemType type;
     public string description;
     public float stowTime;

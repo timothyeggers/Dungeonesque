@@ -1,28 +1,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Pool;
 using static UnityEditor.Progress;
 
 
 public class WeaponSelector : MonoBehaviour
 {
-    public GameObject Equipped { get; private set; }
+    public GameObject EquippedPrefab { get; private set; }     
 
     [SerializeField]
     InventoryObject inventory;
 
-    List<GameObject> cachedInScene = new List<GameObject>();
+    [SerializeField]
+    private ItemObject emptyWeapon;
 
+    private List<GameObject> cachedPrefabs = new List<GameObject>();
+
+    
     int equipped = 0;
     int? queueEquip = null;
 
-    private void Awake()
-    {
-        
-    }
 
     private void Update()
     {
@@ -36,6 +38,20 @@ public class WeaponSelector : MonoBehaviour
         }
 
     }
+    
+    public ItemObject GetWeaponOrNext(int index)
+    {
+        var filtered = inventory.GetWeapons();
+        filtered.Insert(0, emptyWeapon);
+
+        if (index > filtered.Count - 1)
+        {
+            var remainder = index % filtered.Count;
+            return filtered[remainder];
+        }
+
+        return filtered[index];
+    }
 
     public void Equip(int index)
     {
@@ -48,43 +64,36 @@ public class WeaponSelector : MonoBehaviour
 
     IEnumerator EquipRoutine()
     {
-        if (equipped > 0)
-        {
-            var equipable = inventory.GetWeaponOrNext(equipped);
-            yield return new WaitForSeconds(equipable.stowTime);
+        var weapon = GetWeaponOrNext(equipped);
+        yield return new WaitForSeconds(weapon.stowTime);
 
-            equipped = 0;
-
-            if (Equipped) Equipped.SetActive(false);
-            Equipped = null;
-        }
-
+        equipped = 0;
+        if (EquippedPrefab) EquippedPrefab.SetActive(false);
+        EquippedPrefab = null;
+        
         if (queueEquip is int queue)
         {
-            var equipable = inventory.GetWeaponOrNext(queue);
-            yield return new WaitForSeconds(equipable.unstowTime);
+            weapon = GetWeaponOrNext(queue);
+            yield return new WaitForSeconds(weapon.unstowTime);
             
             equipped = queue;
             queueEquip = null;
-            Debug.Log($"Equipped: {equipable}");
-
-            if (Equipped) Equipped.SetActive(false);
+            Debug.Log($"Equipped: {weapon}, {equipped}");
             
-            if (equipable.prefab == null) yield break;
+            if (weapon.prefab == null) yield break;
 
-            if (equipable.prefabInScene)
+            var prefab = cachedPrefabs.Find(x => x.scene.IsValid() && x.GetInstanceID() == weapon.prefabInstanceId);
+            
+            if (prefab != null)
             {
-                var prefab = cachedInScene.Find(x => x.scene.IsValid());
-                // need to write better check if its already in scene or something
-                Equipped = prefab;
-                Equipped.SetActive(true);
-            }
-            else
+                EquippedPrefab = prefab;
+                EquippedPrefab.SetActive(true);
+            } else
             {
-                Equipped = equipable.prefab;
-                Equipped.SetActive(true);
-                cachedInScene.Add(Instantiate(Equipped));
-                equipable.prefabInScene = true;
+                EquippedPrefab = Instantiate(weapon.prefab);
+                EquippedPrefab.SetActive(true);
+                cachedPrefabs.Add(EquippedPrefab);
+                weapon.prefabInstanceId = EquippedPrefab.GetInstanceID();
             }
         }
     }

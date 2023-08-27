@@ -13,32 +13,25 @@ using static UnityEngine.EventSystems.EventTrigger;
 public class InventoryObject : ScriptableObject
 {
     [SerializeField]
-    private List<ItemObject> items = new List<ItemObject>();
-    
+    private List<ItemObject> items = new List<ItemObject>();    
+
     public void Add(ItemObject item)
     {
         items.Add(item);
     }
 
-    public List<ItemObject> GetWeapons()
+    public List<ItemObject> GetItemsBy(ItemType type)
     {
         var filtered = items.FindAll(x => x != null && x.type == ItemType.Weapon);
-        filtered.Insert(0, CreateInstance<DefaultItemObject>());
 
         return filtered;
     }
-
-    public ItemObject GetWeaponOrNext(int index)
+    
+    public List<ItemObject> GetWeapons()
     {
-        var filtered = GetWeapons();
-        
-        if (index > filtered.Count - 1)
-        {
-            var remainder = index % filtered.Count;
-            return filtered[remainder];
-        }
-        
-        return filtered[index]; 
+        var filtered = GetItemsBy(ItemType.Weapon);
+
+        return filtered;
     }
 
     public ItemObject Get(int index) { return items[index]; }

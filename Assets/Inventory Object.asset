@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items:
   - {fileID: 11400000, guid: fbdb3afd24b9e384ca9cafe457a3cc92, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: fbdb3afd24b9e384ca9cafe457a3cc92, type: 2}
+  EmptyWeapon: {fileID: 0}
