@@ -21,6 +21,27 @@ public class VisualDetector : MonoBehaviour
     [SerializeField]
     float range = 10f;
 
+    [SerializeField]
+    Transform eyeLocation;
+
+    [SerializeField]
+    float fovWidth = 3f;
+
+    [SerializeField]
+    float fovHeight = 2f;
+
+    [SerializeField]
+    float fovDepth = 6f;
+
+    public void Start()
+    {
+        var meshObject = Instantiate(new GameObject("FOV Mesh"), eyeLocation);
+        var filter = meshObject.AddComponent<MeshFilter>();
+        meshObject.AddComponent<MeshRenderer>();
+        filter.mesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth, fovHeight);
+        meshObject.transform.rotation = Quaternion.Euler(-90, 0, 0);       
+    }
+
     private void Update()
     {
         float fovRads = FOV * Mathf.Deg2Rad;

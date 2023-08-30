@@ -20,16 +20,9 @@ public class InventoryObject : ScriptableObject
         items.Add(item);
     }
 
-    public List<ItemObject> GetItemsBy(ItemType type)
+    public List<ItemObject> GetItems(ItemType type = ItemType.Default)
     {
-        var filtered = items.FindAll(x => x != null && x.type == ItemType.Weapon);
-
-        return filtered;
-    }
-    
-    public List<ItemObject> GetWeapons()
-    {
-        var filtered = GetItemsBy(ItemType.Weapon);
+        var filtered = items.FindAll(x => x != null && x.type == type);
 
         return filtered;
     }

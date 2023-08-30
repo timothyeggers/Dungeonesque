@@ -8,14 +8,8 @@ using Object = System.Object;
 public class InvestigateState : IState
 {
     NavMeshAgent agent;
-    StateMachine machine;
     Vector3 startPos;
     Vector3? queueDestination;
-
-    RangeFloat waitTime;
-    float radius;
-    float maxWanderRadius;
-    float waitFor = 0f;
 
     LayerMask enemyLayer;
 
@@ -27,14 +21,9 @@ public class InvestigateState : IState
     // but if a wild bear is in sight, its like a 10 aggression
     // and finally if you attack the enemy, its like max aggression
     // funny its osunds liek we can use a statemachine
-    public InvestigateState(NavMeshAgent agent, RangeFloat waitTime, float radius, float maxDistanceFromStart = 0f)
+    public InvestigateState(NavMeshAgent agent)
     {
-        
-
         this.agent = agent;
-        this.waitTime = waitTime;
-        this.radius = radius;
-        this.maxWanderRadius = maxDistanceFromStart;
         this.startPos = agent.transform.position;
 
         this.enemyLayer = 1 << LayerMask.NameToLayer("Default");
@@ -53,7 +42,11 @@ public class InvestigateState : IState
 
     public void Update()
     {
-        agent.SetDestination(GameObject.FindGameObjectWithTag("Player").transform.position);
+        if (queueDestination is Vector3 queue)
+        {
+            agent.SetDestination(queue);
+            queueDestination = null;
+        }
     }
 
     public void SetTargetPosition(Vector3 position)

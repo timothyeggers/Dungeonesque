@@ -8,19 +8,13 @@ using Object = System.Object;
 public class VisualNotifier : MonoBehaviour
 {
     [SerializeField]
-    GameEvent onDistractionSpotted;
-
-    [SerializeField]
-    GameEvent onPlayerSpotted;
-
-    [SerializeField]
-    GameEvent onEnemySpotted;
+    GameEvent onVisualDetectorEntered;
 
     [SerializeField]
     float weight = 1f;
 
     public void Spotted(Component from, RaycastHit hit)
     {
-        onDistractionSpotted?.Raise(this, hit);
+        onVisualDetectorEntered?.Raise(this, hit);
     }
 }

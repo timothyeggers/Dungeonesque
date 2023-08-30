@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bottle
   m_EditorClassIdentifier: 
   prefab: {fileID: 7038547041593145697, guid: fbfe0851a02eaa4439e12a34c76090f0, type: 3}
-  type: 1
+  type: 0
   description: 
   stowTime: 0.5
   unstowTime: 0.5

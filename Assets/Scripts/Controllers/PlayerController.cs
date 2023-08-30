@@ -60,9 +60,10 @@ public class PlayerController : MonoBehaviour
     {
         machine.Update();
 
-        if (Input.GetMouseButtonDown(1))
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
         {
-            weaponSelector.UseWeapon(this.gameObject);
+            Debug.DrawLine(transform.position, hit.point, Color.white);
         }
     }
 }

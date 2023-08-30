@@ -13,16 +13,12 @@ public class WeaponSelector : MonoBehaviour
 {
     public ItemObject Equipped { get; private set; }
 
-    public GameObject EquippedPrefab { get; private set; }
-
     [SerializeField]
     InventoryObject inventory;
 
     [SerializeField]
     private ItemObject emptyWeapon;
-
-    private List<GameObject> cachedPrefabs = new List<GameObject>();
-        
+            
     int current;
     int? queue;
 
@@ -38,18 +34,10 @@ public class WeaponSelector : MonoBehaviour
         }
 
     }
-
-    public void UseWeapon(GameObject sender)
-    {
-        if (Equipped is IWeapon weapon)
-        {
-            weapon.Attack(sender);
-        }
-    }
     
     public ItemObject GetWeaponOrNext(int index)
     {
-        var filtered = inventory.GetWeapons();
+        var filtered = inventory.GetItems();
         filtered.Insert(0, emptyWeapon);
 
         if (index > filtered.Count - 1)
@@ -75,45 +63,20 @@ public class WeaponSelector : MonoBehaviour
         var weapon = GetWeaponOrNext(current);
         yield return new WaitForSeconds(weapon.stowTime);
 
-        // Reset to empty hands
+        Debug.Log($"Unequipped: {weapon}.");
         current = 0;
         Equipped = emptyWeapon;
-
-        if (EquippedPrefab) EquippedPrefab.SetActive(false);
-        EquippedPrefab = null;
         
-        // If there's a weapon in the equip queue
         if (queue is int next)
         {
             weapon = GetWeaponOrNext(next);
             yield return new WaitForSeconds(weapon.unstowTime);
-                        
+
+            Debug.Log($"Equipped: {weapon}.");
             current = next;
             queue = null;
 
             Equipped = weapon;
-
-            if (weapon.prefab == null) yield break;
-
-            CreateWeaponPrefab(weapon);
-        }
-    }
-
-    private void CreateWeaponPrefab(ItemObject weapon)
-    {
-        var prefab = cachedPrefabs.Find(x => x.scene.IsValid() && x.GetInstanceID() == weapon.prefabInstanceId);
-
-        if (prefab != null)
-        {
-            EquippedPrefab = prefab;
-            EquippedPrefab.SetActive(true);
-        }
-        else
-        {
-            EquippedPrefab = Instantiate(weapon.prefab);
-            EquippedPrefab.SetActive(true);
-            cachedPrefabs.Add(EquippedPrefab);
-            weapon.prefabInstanceId = EquippedPrefab.GetInstanceID();
         }
     }
 }

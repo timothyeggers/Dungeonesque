@@ -12,6 +12,12 @@ public class Entity : MonoBehaviour
     StateMachine machine;
     Priorities priority = Priorities.Other;
 
+    #region States
+    IdleState idle;
+    WanderState wander;
+    InvestigateState investigate;
+    #endregion
+
     void At(IState from, IState to, Func<bool> predicate) => machine.AddTransition(from, to, predicate);
 
     void Awake()
@@ -32,9 +38,9 @@ public class Entity : MonoBehaviour
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
 
         // initialize states
-        IdleState idle = new IdleState();
-        WanderState wander = new WanderState(agent, new RangeFloat(0.25f, 5), 5f, 20f);
-        InvestigateState investigate = new InvestigateState(agent, new RangeFloat(5, 5), 5f, 50f);
+        idle = new IdleState();
+        wander = new WanderState(agent, new RangeFloat(0.25f, 5), 5f, 20f);
+        investigate = new InvestigateState(agent);
 
 
         // add static transitions
@@ -50,6 +56,8 @@ public class Entity : MonoBehaviour
     {
         if (sender.GetType() == typeof(VisualNotifier)) {
             priority = Priorities.Visual;
+            if (data is RaycastHit hit)
+                investigate.SetTargetPosition(hit.point);
         }
     } 
 
