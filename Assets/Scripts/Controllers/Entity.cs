@@ -32,7 +32,7 @@ public class Entity : MonoBehaviour
         machine = new StateMachine();
 
         // transition predicates
-        Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.A);
+        Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.Space);
         Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
 /*        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;*/
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
@@ -46,10 +46,11 @@ public class Entity : MonoBehaviour
         // add static transitions
         At(idle, wander, BeginWander);
         At(wander, investigate, BeginInvestigateVisual);
+        At(idle, investigate, BeginInvestigateVisual);
         At(investigate, wander, StopInvestigation);
 
         // set default state
-        machine.SetState(wander);
+        machine.SetState(idle);
     }
 
     public void SetPriority(Component sender, GameObject target)

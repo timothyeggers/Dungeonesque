@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -30,9 +31,18 @@ public class VisualDetector : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<VisualNotifier>(out var notifier))
+        var direction = other.transform.position - transform.position;
+        direction = direction.normalized;
+
+        var ray = new Ray(transform.position, direction);
+        var range = fovDepth;
+
+        if (Physics.Raycast(ray, out var hit, range))
         {
-            notifier.Spotted(this);
+            if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
+            {
+                notifier.Spotted(this);
+            }
         }
     }
     
@@ -42,3 +52,31 @@ public class VisualDetector : MonoBehaviour
         return direction.normalized;
     }
 }
+
+/*
+date()
+    {
+    float fovRads = FOV * Mathf.Deg2Rad;
+    fovRads /= resolution;
+
+    for (int i = -(resolution / 2); i <= (resolution / 2); i++)
+    {
+        float angle = fovRads * i;
+        var direction = DirectionFrom(angle);
+        direction = Quaternion.Euler(0, transform.eulerAngles.y, 0) * direction;
+
+        var ray = new Ray(transform.position, direction);
+        var range = this.range;
+
+        if (Physics.Raycast(ray, out var hit, range, monitorLayer))
+        {
+            if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
+            {
+                notifier.Spotted(this, hit);
+            }
+            range = Vector3.Distance(ray.origin, hit.point);
+        }
+
+        Debug.DrawRay(ray.origin, ray.direction * range, Color.red);
+    }
+}*/
