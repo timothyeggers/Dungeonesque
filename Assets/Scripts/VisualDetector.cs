@@ -6,73 +6,39 @@ using UnityEngine.AI;
 using Object = System.Object;
 
 
-[ExecuteInEditMode]
 public class VisualDetector : MonoBehaviour
 {
     [SerializeField]
-    LayerMask monitorLayer;
+    float fovWidth = 7f;
 
     [SerializeField]
-    float FOV = 90f;
+    float fovHeight = 5f;
 
     [SerializeField]
-    int resolution = 10;
+    float fovDepth = 7f;
 
-    [SerializeField]
-    float range = 10f;
+    private MeshCollider meshCollider;
 
-    [SerializeField]
-    Transform eyeLocation;
-
-    [SerializeField]
-    float fovWidth = 3f;
-
-    [SerializeField]
-    float fovHeight = 2f;
-
-    [SerializeField]
-    float fovDepth = 6f;
-
-    public void Start()
+    public void OnEnable()
     {
-        var meshObject = Instantiate(new GameObject("FOV Mesh"), eyeLocation);
-        var filter = meshObject.AddComponent<MeshFilter>();
-        meshObject.AddComponent<MeshRenderer>();
-        filter.mesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth, fovHeight);
-        meshObject.transform.rotation = Quaternion.Euler(-90, 0, 0);       
+        meshCollider = GetComponent<MeshCollider>();
+        var filter = GetComponent<MeshFilter>();
+        filter.sharedMesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth, fovHeight);
+        filter.transform.rotation = Quaternion.Euler(-90, 0, 0);
+        meshCollider.sharedMesh = filter.sharedMesh;
     }
 
-    private void Update()
+    public void OnTriggerEnter(Collider other)
     {
-        float fovRads = FOV * Mathf.Deg2Rad;
-        fovRads /= resolution;
-
-        for (int i = -(resolution / 2); i <= (resolution / 2); i++)
+        if (other.TryGetComponent<VisualNotifier>(out var notifier))
         {
-            float angle = fovRads * i;
-            var direction = DirectionFrom(angle);
-            direction = Quaternion.Euler(0, transform.eulerAngles.y, 0) * direction;
-
-            var ray = new Ray(transform.position, direction);
-            var range = this.range;
-
-            if (Physics.Raycast(ray, out var hit, range, monitorLayer))
-            {
-                if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
-                {
-                    notifier.Spotted(this, hit);
-                }
-                range = Vector3.Distance(ray.origin, hit.point);
-            }
-
-            Debug.DrawRay(ray.origin, ray.direction * range, Color.red);
+            notifier.Spotted(this);
         }
     }
-
+    
     Vector3 DirectionFrom(float radians)
     {
         var direction = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
         return direction.normalized;
     }
-
 }

@@ -40,7 +40,7 @@ public class Entity : MonoBehaviour
         // initialize states
         idle = new IdleState();
         wander = new WanderState(agent, new RangeFloat(0.25f, 5), 5f, 20f);
-        investigate = new InvestigateState(agent);
+        investigate = new InvestigateState(agent, ResetPriority);
 
 
         // add static transitions
@@ -52,14 +52,19 @@ public class Entity : MonoBehaviour
         machine.SetState(wander);
     }
 
-    public void SetPriority(Component sender, object data)
+    public void SetPriority(Component sender, GameObject target)
     {
-        if (sender.GetType() == typeof(VisualNotifier)) {
+        if (sender is VisualNotifier)
+        {
             priority = Priorities.Visual;
-            if (data is RaycastHit hit)
-                investigate.SetTargetPosition(hit.point);
+            investigate.SetTargetPosition(target.transform.position);
         }
     } 
+
+    public void ResetPriority()
+    {
+        priority = Priorities.Other;
+    }
 
     void Update()
     {

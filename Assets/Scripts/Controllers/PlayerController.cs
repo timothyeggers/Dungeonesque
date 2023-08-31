@@ -8,7 +8,6 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
     StateMachine machine;
-    StateMachine inventory;
 
     CharacterController controller;
     WeaponSelector weaponSelector;
@@ -16,18 +15,15 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         #region Get Component References
-
         controller = GetComponent<CharacterController>();
-       // visualDetector = GetComponent<VisualDetector>();
-       weaponSelector = GetComponent<WeaponSelector>();
-
+        // visualDetector = GetComponent<VisualDetector>();
+        weaponSelector = GetComponent<WeaponSelector>();
         #endregion
 
         machine = new StateMachine();
-        inventory = new StateMachine();
 
         Func<bool> Moving = () => Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0;
-        Func<bool> Idle = () => Input.GetAxisRaw("Horizontal") + Input.GetAxisRaw("Vertical") == 0;
+        Func<bool> Idle = () => Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0;
 
         Func<bool> Aiming = () => Input.GetMouseButton(1);
 
@@ -42,11 +38,8 @@ public class PlayerController : MonoBehaviour
         machine.At(idle, grounded, Moving);
         machine.At(grounded, idle, Idle);
 
-        inventory.At(stowed, aimed, Aiming);
-
         // set default state
         machine.SetState(idle);
-        //inventory.SetState(stowed);
     }
 
     // Start is called before the first frame update

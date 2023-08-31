@@ -10,8 +10,7 @@ public class IdleState : IState
     public IdleState() { }
 
     public void OnEnter()
-    {
-        Debug.Log("Testing?");
+    { 
         //throw new NotImplementedException();
     }
 

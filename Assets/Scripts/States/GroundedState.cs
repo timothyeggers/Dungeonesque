@@ -21,7 +21,6 @@ public class GroundedState : IState
 
     public void OnEnter()
     {
-        Debug.Log("Grounded?");
         //throw new NotImplementedException();
     }
 

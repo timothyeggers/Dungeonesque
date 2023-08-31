@@ -8,13 +8,13 @@ using Object = System.Object;
 public class VisualNotifier : MonoBehaviour
 {
     [SerializeField]
-    GameEvent onVisualDetectorEntered;
+    GameEventSO onNotifierTriggered;
 
     [SerializeField]
     float weight = 1f;
 
-    public void Spotted(Component from, RaycastHit hit)
+    public void Spotted(Component from)
     {
-        onVisualDetectorEntered?.Raise(this, hit);
+        onNotifierTriggered?.Raise(this, gameObject);
     }
 }
