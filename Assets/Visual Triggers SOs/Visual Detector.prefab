@@ -47,10 +47,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2890c31b6bed29479cbfb6d7b72ae97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onVisualDetectorTriggered: {fileID: 11400000, guid: bdcdb1f4a28d19a4189a43c3cc991569, type: 2}
+  opaqueLayers:
+    serializedVersion: 2
+    m_Bits: 65
   fovWidth: 7
   fovHeight: 5
   fovDepth: 7
+  minDistanceUntilFullySpotted: 4
+  timeUntilFullySpotted: 1.4
 --- !u!33 &1360762071755848784
 MeshFilter:
   m_ObjectHideFlags: 0

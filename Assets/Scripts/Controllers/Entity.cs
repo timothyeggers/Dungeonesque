@@ -11,17 +11,21 @@ public class Entity : MonoBehaviour
     [SerializeField] AudioDetector ears;
 
     NavMeshAgent agent;
-    
     StateMachine machine;
+
+    GameObject target;
     Priorities priority = Priorities.Other;
 
     #region States
     IdleState idle;
     WanderState wander;
     InvestigateState investigate;
+    ChaseState chase;
     #endregion
 
     void At(IState from, IState to, Func<bool> predicate) => machine.AddTransition(from, to, predicate);
+
+    void Any(IState to, Func<bool> predicate) => machine.AddAnyTransition(to, predicate);
 
     void Awake()
     {
@@ -32,7 +36,7 @@ public class Entity : MonoBehaviour
         #region Register Eyes and Ears
         if (eyes != null )
         {
-            eyes.RegisterListener(SetPriority);
+            eyes.RegisterListener(SetPriority, SetTarget);
         }
 
         if (ears != null )
@@ -47,12 +51,15 @@ public class Entity : MonoBehaviour
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.Space);
         Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
         Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;
+        Func<bool> SpottedPriorityVisual = () => priority == Priorities.Visual && target != null;
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
+        Func<bool> StartChase = () => target != null;
 
         // initialize states
         idle = new IdleState();
         wander = new WanderState(agent, new RangeFloat(0.25f, 5), 5f, 20f);
-        investigate = new InvestigateState(agent, ResetPriority);
+        investigate = new InvestigateState(agent, 5f, ResetPriority);
+        chase = new ChaseState(agent, 5f, ResetPriority);
 
 
         // add static transitions
@@ -64,6 +71,7 @@ public class Entity : MonoBehaviour
         At(investigate, investigate, BeginInvestigateVisual);
         At(wander, investigate, BeginInvestigateAudio);
         At(investigate, wander, StopInvestigation);
+        Any(chase, StartChase);
 
         // set default state
         machine.SetState(idle);
@@ -72,12 +80,6 @@ public class Entity : MonoBehaviour
     public void SetPriority(Component sender)
     {
         Debug.Log($"Called from {sender}.");
-        if (sender is VisualNotifier)
-        {
-            priority = Priorities.Visual;
-            investigate.SetTargetPosition(sender.transform.position);
-            Debug.Log("Entity will investigate visual notification.");
-        }
 
         if (sender is AudioTrigger)
         {
@@ -85,11 +87,27 @@ public class Entity : MonoBehaviour
             investigate.SetTargetPosition(sender.transform.position);
             Debug.Log("Entity will investigate audio notification.");
         }
+
+        if (sender is VisualNotifier)
+        {
+            priority = Priorities.Visual;
+            investigate.SetTargetPosition(sender.transform.position);
+            Debug.Log("Entity will investigate visual notification.");
+        }
+
+        
     } 
 
     public void ResetPriority()
     {
         priority = Priorities.Other;
+        target = null;
+    }
+    
+    public void SetTarget(GameObject target)
+    {
+        this.target = target;
+        chase.SetTarget(target);
     }
 
     void Update()

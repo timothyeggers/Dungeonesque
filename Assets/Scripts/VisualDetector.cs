@@ -8,9 +8,13 @@ using Object = System.Object;
 
 
 public delegate void OnSeen(Component sender);
+public delegate void OnSeenFully(GameObject target);
 
 public class VisualDetector : MonoBehaviour
 {
+    [SerializeField]
+    LayerMask opaqueLayers;
+
     [SerializeField]
     float fovWidth = 7f;
 
@@ -18,17 +22,24 @@ public class VisualDetector : MonoBehaviour
     float fovHeight = 5f;
 
     [SerializeField]
-    float fovDepth = 7f;
+    float fovDepth = 13f;
+
+    [SerializeField] float minDistanceUntilFullySpotted = 7f;
+    [SerializeField] float timeUntilFullySpotted = 1.4f;
+
+    GameObject target;
+    float targetInRangeDt = 0f;
 
     private MeshCollider meshCollider;
 
     private List<OnSeen> onSeenCallbacks = new List<OnSeen>();
+    private List<OnSeenFully> onSeenFullyCallbacks = new List<OnSeenFully>();
 
     public void OnEnable()
     {
         meshCollider = GetComponent<MeshCollider>();
         var filter = GetComponent<MeshFilter>();
-        filter.sharedMesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth, fovHeight);
+        filter.sharedMesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth-1, fovHeight);
         filter.transform.rotation = Quaternion.Euler(-90, 0, 0);
         meshCollider.sharedMesh = filter.sharedMesh;
     }
@@ -41,52 +52,43 @@ public class VisualDetector : MonoBehaviour
         var ray = new Ray(transform.position, direction);
         var range = fovDepth;
 
-        if (Physics.Raycast(ray, out var hit, range))
+        if (Physics.Raycast(ray, out var hit, range, opaqueLayers))
         {
             if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
             {
                 notifier.Spotted(this);
                 onSeenCallbacks.ForEach(x => x.Invoke(notifier));
+                target = notifier.gameObject;
             }
         }
     }
 
-    public void RegisterListener(OnSeen callback)
+    private void Update()
     {
-        onSeenCallbacks.Add(callback);
+        if (target != null)
+        {
+            targetInRangeDt += Time.deltaTime;
+            if (Vector3.Distance(gameObject.transform.position, target.transform.position) <= minDistanceUntilFullySpotted)
+            {
+                targetInRangeDt = timeUntilFullySpotted;
+            }
+            if (Vector3.Distance(gameObject.transform.position, target.transform.position) >= fovDepth + 2)
+            {
+                target = null;
+            }
+        }
+
+        if (targetInRangeDt >= timeUntilFullySpotted)
+        {
+            onSeenFullyCallbacks.ForEach(x => x.Invoke(target));
+            targetInRangeDt = 0;
+            target = null;
+        }
     }
-    
-    Vector3 DirectionFrom(float radians)
+
+    public void RegisterListener(OnSeen onSeen, OnSeenFully onSeenFully)
     {
-        var direction = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-        return direction.normalized;
+        onSeenCallbacks.Add(onSeen);
+        onSeenFullyCallbacks.Add(onSeenFully);
     }
 }
-
-/*
-date()
-    {
-    float fovRads = FOV * Mathf.Deg2Rad;
-    fovRads /= resolution;
-
-    for (int i = -(resolution / 2); i <= (resolution / 2); i++)
-    {
-        float angle = fovRads * i;
-        var direction = DirectionFrom(angle);
-        direction = Quaternion.Euler(0, transform.eulerAngles.y, 0) * direction;
-
-        var ray = new Ray(transform.position, direction);
-        var range = this.range;
-
-        if (Physics.Raycast(ray, out var hit, range, monitorLayer))
-        {
-            if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
-            {
-                notifier.Spotted(this, hit);
-            }
-            range = Vector3.Distance(ray.origin, hit.point);
-        }
-
-        Debug.DrawRay(ray.origin, ray.direction * range, Color.red);
-    }
-}*/

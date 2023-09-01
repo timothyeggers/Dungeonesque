@@ -45,11 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e1b5ced4ff5da543a30ea1a6175059d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onAudioTriggered: {fileID: 11400000, guid: 5cfc7fb24e0ae45409f62dd2880d53b0, type: 2}
-  onAudioDetectorTriggered: {fileID: 11400000, guid: 5bd18cd37ec451c41adddcfd5268227b, type: 2}
   audioOpaqueLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 65
   maxAudibleRange: 15
 --- !u!114 &1616900311123574284
 MonoBehaviour:

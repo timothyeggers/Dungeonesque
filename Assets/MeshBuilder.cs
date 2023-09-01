@@ -16,9 +16,6 @@ public static class MeshBuilder
         Vector3[] vertices = new Vector3[vertextCount];
         int[] triangles = new int[triangleCount * 3];
 
-        vertices[0] = Vector3.zero;
-        vertices[2] = Vector3.forward;
-
         float alpha = Mathf.PI * 2 / size;
         float omega = alpha * 0.5f;
         for (int i = 0; i < size; i++)
