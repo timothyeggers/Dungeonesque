@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -292953819421728082}
   - component: {fileID: 6524919042103542200}
   - component: {fileID: 30548488694645821}
+  - component: {fileID: -4773422380724495451}
   m_Layer: 0
   m_Name: Bottle
   m_TagString: Untagged
@@ -147,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0755274868dfa8d46b109fe2caf480d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundNotifier: {fileID: -4773422380724495451}
 --- !u!114 &30548488694645821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,5 +161,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e194cab3ad49cb4aa139734f37961b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onVisualDetectorEntered: {fileID: 11400000, guid: e897694c78aa73542989c7001d729d08, type: 2}
   weight: 1
+--- !u!114 &-4773422380724495451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7038547041593145697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a97a60a63023c4892f765314d8886d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onAudioTriggered: {fileID: 11400000, guid: 5cfc7fb24e0ae45409f62dd2880d53b0, type: 2}
+  volume: 1

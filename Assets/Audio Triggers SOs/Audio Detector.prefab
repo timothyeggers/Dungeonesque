@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &311599758624137328
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9079534999424563173}
+  - component: {fileID: 4145270730481722696}
+  - component: {fileID: 1616900311123574284}
+  m_Layer: 7
+  m_Name: Audio Detector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9079534999424563173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311599758624137328}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 11.004432, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4145270730481722696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311599758624137328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e1b5ced4ff5da543a30ea1a6175059d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onAudioTriggered: {fileID: 11400000, guid: 5cfc7fb24e0ae45409f62dd2880d53b0, type: 2}
+  onAudioDetectorTriggered: {fileID: 11400000, guid: 5bd18cd37ec451c41adddcfd5268227b, type: 2}
+  audioOpaqueLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  maxAudibleRange: 15
+--- !u!114 &1616900311123574284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311599758624137328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 559ef87565b9a8a4ebb0c58a1993c99d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _event: {fileID: 11400000, guid: 5cfc7fb24e0ae45409f62dd2880d53b0, type: 2}
+  onEvent_GameObject:
+    m_PersistentCalls:
+      m_Calls: []
+  onEvent_Component:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4145270730481722696}
+        m_TargetAssemblyTypeName: AudioDetector, Assembly-CSharp
+        m_MethodName: AudioTriggered
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onEvent_Component_GameObject:
+    m_PersistentCalls:
+      m_Calls: []
+  onEvent:
+    m_PersistentCalls:
+      m_Calls: []

@@ -7,8 +7,11 @@ using UnityEngine.UIElements;
 
 public class Entity : MonoBehaviour
 {
+    [SerializeField] VisualDetector eyes;
+    [SerializeField] AudioDetector ears;
+
     NavMeshAgent agent;
-    VisualDetector visualDetector;
+    
     StateMachine machine;
     Priorities priority = Priorities.Other;
 
@@ -23,10 +26,19 @@ public class Entity : MonoBehaviour
     void Awake()
     {
         #region Get Component References
-        
         agent = GetComponent<NavMeshAgent>();
-        visualDetector = GetComponent<VisualDetector>();
+        #endregion
 
+        #region Register Eyes and Ears
+        if (eyes != null )
+        {
+            eyes.RegisterListener(SetPriority);
+        }
+
+        if (ears != null )
+        {
+            ears.RegisterListener(SetPriority);
+        }
         #endregion
 
         machine = new StateMachine();
@@ -34,7 +46,7 @@ public class Entity : MonoBehaviour
         // transition predicates
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.Space);
         Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
-/*        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;*/
+        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
 
         // initialize states
@@ -45,20 +57,33 @@ public class Entity : MonoBehaviour
 
         // add static transitions
         At(idle, wander, BeginWander);
-        At(wander, investigate, BeginInvestigateVisual);
         At(idle, investigate, BeginInvestigateVisual);
+        At(wander, investigate, BeginInvestigateVisual);
+        At(idle, investigate, BeginInvestigateAudio);
+        At(investigate, investigate, BeginInvestigateAudio);
+        At(investigate, investigate, BeginInvestigateVisual);
+        At(wander, investigate, BeginInvestigateAudio);
         At(investigate, wander, StopInvestigation);
 
         // set default state
         machine.SetState(idle);
     }
 
-    public void SetPriority(Component sender, GameObject target)
+    public void SetPriority(Component sender)
     {
+        Debug.Log($"Called from {sender}.");
         if (sender is VisualNotifier)
         {
             priority = Priorities.Visual;
-            investigate.SetTargetPosition(target.transform.position);
+            investigate.SetTargetPosition(sender.transform.position);
+            Debug.Log("Entity will investigate visual notification.");
+        }
+
+        if (sender is AudioTrigger)
+        {
+            priority = Priorities.Audio;
+            investigate.SetTargetPosition(sender.transform.position);
+            Debug.Log("Entity will investigate audio notification.");
         }
     } 
 

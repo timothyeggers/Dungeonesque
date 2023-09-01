@@ -20,6 +20,11 @@ public class GameEventSO : ScriptableObject
         gameEventListeners.ForEach(x => x.Raise(go));
     }
 
+    public void Raise(Component sender)
+    {
+        gameEventListeners.ForEach(x => x.Raise(sender));
+    }
+
     public void Raise(Component sender, GameObject go)
     {
         gameEventListeners.ForEach(x => x.Raise(sender, go));

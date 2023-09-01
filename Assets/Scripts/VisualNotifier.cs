@@ -8,13 +8,10 @@ using Object = System.Object;
 public class VisualNotifier : MonoBehaviour
 {
     [SerializeField]
-    GameEventSO onNotifierTriggered;
-
-    [SerializeField]
     float weight = 1f;
 
     public void Spotted(Component from)
     {
-        onNotifierTriggered?.Raise(this, gameObject);
+        Debug.Log($"you've been spotted from {from}.");
     }
 }

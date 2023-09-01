@@ -7,6 +7,8 @@ using UnityEngine.AI;
 using Object = System.Object;
 
 
+public delegate void OnSeen(Component sender);
+
 public class VisualDetector : MonoBehaviour
 {
     [SerializeField]
@@ -19,6 +21,8 @@ public class VisualDetector : MonoBehaviour
     float fovDepth = 7f;
 
     private MeshCollider meshCollider;
+
+    private List<OnSeen> onSeenCallbacks = new List<OnSeen>();
 
     public void OnEnable()
     {
@@ -42,8 +46,14 @@ public class VisualDetector : MonoBehaviour
             if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
             {
                 notifier.Spotted(this);
+                onSeenCallbacks.ForEach(x => x.Invoke(notifier));
             }
         }
+    }
+
+    public void RegisterListener(OnSeen callback)
+    {
+        onSeenCallbacks.Add(callback);
     }
     
     Vector3 DirectionFrom(float radians)

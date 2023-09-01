@@ -14,6 +14,9 @@ public class UnityGameEventListener : MonoBehaviour
     UnityEvent<GameObject> onEvent_GameObject;
 
     [SerializeField]
+    UnityEvent<Component> onEvent_Component;
+
+    [SerializeField]
     UnityEvent<Component, GameObject> onEvent_Component_GameObject;
 
     [SerializeField]
@@ -28,6 +31,11 @@ public class UnityGameEventListener : MonoBehaviour
     public void Raise(GameObject go)
     {
         onEvent_GameObject.Invoke(go);
+    }
+
+    public void Raise(Component sender)
+    {
+        onEvent_Component.Invoke(sender);
     }
 
     public void Raise(Component sender, GameObject go)
