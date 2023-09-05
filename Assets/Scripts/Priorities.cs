@@ -21,6 +21,8 @@ public interface IPriority
     /// Weight represents the priority of the target.  
     /// In PriorityController it's used to determine the time in seconds before it's no longer a priority.
     /// </summary>
+    public int UUID { get; } 
+
     public float weight { get; }
 
     public Priorities type { get; }
@@ -29,17 +31,35 @@ public interface IPriority
 [Serializable]
 public struct DemoSoundTarget : IPriority
 {
+    public int uuid;
+
+    public int UUID => uuid;   
+
     public Priorities type => Priorities.Audio;
 
     public float weight => 3f;
+
+    public DemoSoundTarget(int uuid)
+    {
+        this.uuid = uuid;
+    }
 }
 
 [Serializable]
 public struct DemoVisualTarget : IPriority
 {
+    public int uuid;
+
+    public int UUID => uuid;
+
     public Priorities type => Priorities.Visual;
 
     public float weight => 4f;
+
+    public DemoVisualTarget(int uuid)
+    {
+        this.uuid = uuid;
+    }
 }
 /*
 // Base interface for all objects detected by tower

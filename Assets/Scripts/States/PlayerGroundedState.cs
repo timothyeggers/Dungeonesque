@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using Object = System.Object;
 
-public class GroundedState : IState
+public class PlayerGroundedState : IState
 {
     CharacterController controller;
     float speed;
     float runMod;
     float aimMod;
 
-    public GroundedState(CharacterController controller, float speed = 6f, float runMod = 1.5f, float aimMod = 0.7f) { 
+    public PlayerGroundedState(CharacterController controller, float speed = 6f, float runMod = 1.5f, float aimMod = 0.7f) { 
         this.controller = controller;
         this.speed = speed;
         this.runMod = runMod;
@@ -33,8 +33,8 @@ public class GroundedState : IState
     {
         var input_direction = Vector3.zero;
 
-        var horizontal = Input.GetAxisRaw("Horizontal");
-        var vertical = Input.GetAxisRaw("Vertical");
+        var horizontal = Input.GetAxis("Horizontal");
+        var vertical = Input.GetAxis("Vertical");
         var running = Input.GetKey(KeyCode.LeftShift);
 
         var aiming = Input.GetMouseButton(0) && !running;

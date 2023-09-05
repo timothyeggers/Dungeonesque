@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Editor/BehaviorTreeEditor.uss?fileID=7433441132597879392&amp;guid=e0027773daa844242b1c92ea47faecc5&amp;type=3#BehaviorTreeEditor" />
+    <SplitView fixed-pane-initial-dimension="175">
+        <ui:VisualElement name="leftpanel" style="flex-grow: 1; width: 121px; flex-shrink: 1; opacity: 1; display: flex; visibility: visible; background-color: rgb(56, 56, 56);">
+            <ui:Label tabindex="-1" text="Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Inspector" style="background-color: rgb(37, 37, 37); color: rgb(191, 211, 228); -unity-background-scale-mode: stretch-to-fill; border-left-color: rgba(255, 0, 0, 0); border-right-color: rgba(255, 0, 0, 0); border-top-color: rgba(255, 0, 0, 0); border-bottom-color: rgba(255, 0, 0, 0); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="rightpanel" style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="Tree View" parse-escape-sequences="true" display-tooltip-when-elided="true" name="TreeView" style="background-color: rgb(37, 37, 37); color: rgb(191, 211, 228); -unity-background-scale-mode: stretch-to-fill; border-left-color: rgba(255, 0, 0, 0); border-right-color: rgba(255, 0, 0, 0); border-top-color: rgba(255, 0, 0, 0); border-bottom-color: rgba(255, 0, 0, 0); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+            <BehaviorTreeView focusable="true" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </SplitView>
+</ui:UXML>

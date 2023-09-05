@@ -7,40 +7,30 @@ using UnityEngine.AI;
 using Object = System.Object;
 
 
-public delegate void OnSeen(Component sender);
-public delegate void OnSeenFully(GameObject target);
-
-public class VisualDetector : MonoBehaviour
+[RequireComponent(typeof(MeshCollider), typeof(MeshFilter))]
+public class VisualDetector : MonoBehaviour, ITrigger
 {
-    [SerializeField]
-    LayerMask opaqueLayers;
+    public List<OnTriggerEntered> onTriggerEntered { get; private set; } = new List<OnTriggerEntered>();
+    public List<OnTriggerExited> onTriggerExited { get; private set; } = new List<OnTriggerExited>();
 
-    [SerializeField]
-    float fovWidth = 7f;
+    [SerializeField] LayerMask opaqueLayers;
 
-    [SerializeField]
-    float fovHeight = 5f;
-
-    [SerializeField]
-    float fovDepth = 13f;
-
-    [SerializeField] float minDistanceUntilFullySpotted = 7f;
-    [SerializeField] float timeUntilFullySpotted = 1.4f;
-
-    GameObject target;
-    float targetInRangeDt = 0f;
+    [SerializeField] float fovWidth = 7f;
+    [SerializeField] float fovHeight = 5f;
+    [SerializeField] float fovDepth = 13f;
 
     private MeshCollider meshCollider;
-
-    private List<OnSeen> onSeenCallbacks = new List<OnSeen>();
-    private List<OnSeenFully> onSeenFullyCallbacks = new List<OnSeenFully>();
 
     public void OnEnable()
     {
         meshCollider = GetComponent<MeshCollider>();
+        meshCollider.convex = true;
+        meshCollider.isTrigger = true;
+
         var filter = GetComponent<MeshFilter>();
         filter.sharedMesh = MeshBuilder.BuildPyramid(fovWidth, fovDepth-1, fovHeight);
         filter.transform.rotation = Quaternion.Euler(-90, 0, 0);
+
         meshCollider.sharedMesh = filter.sharedMesh;
     }
 
@@ -54,41 +44,18 @@ public class VisualDetector : MonoBehaviour
 
         if (Physics.Raycast(ray, out var hit, range, opaqueLayers))
         {
-            if (hit.collider.TryGetComponent<VisualNotifier>(out var notifier))
-            {
-                notifier.Spotted(this);
-                onSeenCallbacks.ForEach(x => x.Invoke(notifier));
-                target = notifier.gameObject;
-            }
+            onTriggerEntered.ForEach(x => x.Invoke(other));
         }
     }
 
-    private void Update()
+    public void OnTriggerExit(Collider other)
     {
-        if (target != null)
-        {
-            targetInRangeDt += Time.deltaTime;
-            if (Vector3.Distance(gameObject.transform.position, target.transform.position) <= minDistanceUntilFullySpotted)
-            {
-                targetInRangeDt = timeUntilFullySpotted;
-            }
-            if (Vector3.Distance(gameObject.transform.position, target.transform.position) >= fovDepth + 2)
-            {
-                target = null;
-            }
-        }
-
-        if (targetInRangeDt >= timeUntilFullySpotted)
-        {
-            onSeenFullyCallbacks.ForEach(x => x.Invoke(target));
-            targetInRangeDt = 0;
-            target = null;
-        }
+        onTriggerExited.ForEach(x => x.Invoke(other));
     }
-
-    public void RegisterListener(OnSeen onSeen, OnSeenFully onSeenFully)
+    
+    public void RegisterListener(OnTriggerEntered onTriggerEntered, OnTriggerExited onTriggerExited)
     {
-        onSeenCallbacks.Add(onSeen);
-        onSeenFullyCallbacks.Add(onSeenFully);
+        this.onTriggerEntered.Add(onTriggerEntered);
+        this.onTriggerExited.Add(onTriggerExited);
     }
 }

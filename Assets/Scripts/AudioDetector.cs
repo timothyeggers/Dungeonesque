@@ -8,7 +8,7 @@ using UnityEngine.AI;
 using Object = System.Object;
 
 
-public delegate void OnHeard(Component sender);
+public delegate void OnHeard(Collider sender);
 
 public class AudioDetector : MonoBehaviour
 {
@@ -29,7 +29,7 @@ public class AudioDetector : MonoBehaviour
             var extraRange = sender.TryGetComponent<AudioTrigger>(out var trigger) ? trigger.volume : 0;
             if (distance < maxAudibleRange + extraRange)
             {
-                onHeardCallbacks.ForEach(x => x.Invoke(trigger));
+                onHeardCallbacks.ForEach(x => x.Invoke(null));
             }
         }
     }

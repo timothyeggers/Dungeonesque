@@ -23,8 +23,8 @@ public class PriorityController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            SetPriority(new DemoSoundTarget());
-            SetPriority(new DemoVisualTarget());
+            SetPriority(new DemoSoundTarget(3));
+            SetPriority(new DemoSoundTarget(4));
         }
 
         var targets = new Dictionary<IPriority, float>(priorityTargets);

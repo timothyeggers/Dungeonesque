@@ -36,12 +36,12 @@ public class Entity : MonoBehaviour
         #region Register Eyes and Ears
         if (eyes != null )
         {
-            eyes.RegisterListener(SetPriority, SetTarget);
+            eyes.RegisterListener(AddTarget, null);
         }
 
         if (ears != null )
         {
-            ears.RegisterListener(SetPriority);
+            ears.RegisterListener(AddTarget);
         }
         #endregion
 
@@ -77,33 +77,31 @@ public class Entity : MonoBehaviour
         machine.SetState(idle);
     }
 
-    public void SetPriority(Component sender)
+    public void AddTarget(Collider sender)
     {
         Debug.Log($"Called from {sender}.");
 
-        if (sender is AudioTrigger)
+        if (sender.gameObject.GetComponent<AudioTrigger>())
         {
             priority = Priorities.Audio;
             investigate.SetTargetPosition(sender.transform.position);
             Debug.Log("Entity will investigate audio notification.");
         }
 
-        if (sender is VisualNotifier)
+        if (sender.gameObject.GetComponent<VisualNotifier>())
         {
             priority = Priorities.Visual;
             investigate.SetTargetPosition(sender.transform.position);
             Debug.Log("Entity will investigate visual notification.");
         }
 
-        
     } 
 
     public void ResetPriority()
     {
-        priority = Priorities.Other;
-        target = null;
+
     }
-    
+
     public void SetTarget(GameObject target)
     {
         this.target = target;

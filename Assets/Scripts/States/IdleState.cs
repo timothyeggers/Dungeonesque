@@ -16,6 +16,7 @@ public class IdleState : IState
 
     public void OnExit()
     {
+        Debug.Log("Base OnExit Idle.");
         //throw new NotImplementedException();
     }
 
