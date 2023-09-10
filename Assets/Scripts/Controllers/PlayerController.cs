@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
         {
-            Debug.DrawLine(transform.position, hit.point, Color.white);
+            /*Debug.DrawLine(transform.position, hit.point, Color.white);*/
         }
     }
 

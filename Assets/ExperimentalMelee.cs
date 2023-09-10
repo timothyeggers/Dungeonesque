@@ -36,6 +36,7 @@ public class ExperimentalMelee : MonoBehaviour
     [SerializeField] private float verticalRotation = 80f;
     [SerializeField] private float armLength = 1f;
     [SerializeField] private MeshCollider hitCollider;
+    [SerializeField] private float selectorRadiusSetting = 150f;
     
     private int targetIndex = 0;
     private List<Collider> inView = new List<Collider>() { null };
@@ -44,7 +45,7 @@ public class ExperimentalMelee : MonoBehaviour
     private Vector3 lockDirection = Vector2.zero;
 
     private Vector3 startRotation;
-    private Vector3 selectAngleLocation;
+    private Vector3 mouseLockOrigin;
     
 
     private void Start()
@@ -113,6 +114,7 @@ public class ExperimentalMelee : MonoBehaviour
     }
 
     private void Update_FixedLock()
+
     {
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
@@ -122,6 +124,7 @@ public class ExperimentalMelee : MonoBehaviour
             }
             state = CharacterSwivel.FIXED;
             lockDirection = LookAtMouse();
+            mouseLockOrigin = Input.mousePosition;
         }
     }
 
@@ -134,7 +137,8 @@ public class ExperimentalMelee : MonoBehaviour
         Update_TargetLock();
         Update_FixedLock();
 
-        selectAngleLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        
+
 
         switch (state)
         {
@@ -143,16 +147,16 @@ public class ExperimentalMelee : MonoBehaviour
                 break;
             case CharacterSwivel.FIXED:
                 parent.transform.forward = lockDirection;
-                Update_SwordRotation();
+                Update_SwordRotation(mouseLockOrigin, Input.mousePosition);
                 break;
-            case CharacterSwivel.TARGET_LOCK:
+/*            case CharacterSwivel.TARGET_LOCK:
                 var forward = (target.transform.position - parent.transform.position).normalized;
                 forward.y = 0f;
                 parent.transform.forward = forward;
                 Update_SwordRotation();
                 
                 Debug.DrawLine(parent.transform.position, target.transform.position, Color.red);
-                break;
+                break;*/
         }
         
 
@@ -186,31 +190,36 @@ public class ExperimentalMelee : MonoBehaviour
     {
         Gizmos.color = Color.red;
         float radius = state != CharacterSwivel.FREE ? 1 : 0;
-        Gizmos.DrawSphere(selectAngleLocation, radius);
+        Gizmos.DrawSphere(mouseLockOrigin, radius);
     }
 
-    private void Update_SwordRotation()
+    private void Update_SwordRotation(Vector2 origin, Vector2 destination)
     {
-        var mouseDirFromCharacter = DirectionToMouse();
-        var characterDirection = new Vector2(parent.transform.forward.x, parent.transform.forward.z);
-        float angle = Vector2.SignedAngle(mouseDirFromCharacter, characterDirection);
+        // dont touch this
+        var point = destination - origin;
+        float angle = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
+        int sign = Mathf.Abs(angle) > 90 ? -1 : 1;
 
-        var xRot = 90 - Mathf.Abs(angle);
-        xRot = Mathf.Clamp(xRot, 0, verticalRotation);
+        // y rotation
+        var yMagnitude = point.x / selectorRadiusSetting;
+        yMagnitude = Mathf.Clamp(yMagnitude, -1, 1);
 
-        var yRot = angle;
-        yRot = Mathf.Clamp(yRot, -(horizontalRotation / 2), horizontalRotation / 2);
+        // x rotation
+        var xMagnitude = point.y / selectorRadiusSetting;
+        xMagnitude = Mathf.Clamp(xMagnitude, -1, 1);
 
-        var zRot = 90 - angle;
-        zRot = Mathf.Clamp(zRot, 0, 180);
-
-        var targetRot = new Vector3(-xRot, yRot, zRot);
+        var yRot = yMagnitude * (horizontalRotation / 2);
+        var xRot = -xMagnitude * (verticalRotation / 2);
+    
+        var targetRot = new Vector3(xRot, yRot, 0);
 
         armRotation.eulerAngles = parent.transform.eulerAngles + targetRot;
         if (state == CharacterSwivel.FREE)
         {
             armRotation.eulerAngles += startRotation;
         }
+
+        Debug.DrawLine(origin, destination, Color.red);
     }
 
     Vector2 DirectionToMouse()
