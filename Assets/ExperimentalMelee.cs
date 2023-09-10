@@ -4,34 +4,65 @@ using System.Linq;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using EzySlice;
 
-[RequireComponent(typeof(VisualDetector))]
+
+enum CharacterSwivel
+{
+    FREE,
+    FIXED,
+    TARGET_LOCK
+}
+
 public class ExperimentalMelee : MonoBehaviour
 {
-    public Collider target => inView[targetIndex];
+    public Collider target
+    {
+        get
+        {
+            if (targetIndex < inView.Count)
+                return inView[targetIndex];
+            targetIndex = 0;
+            state = CharacterSwivel.FREE;
+            return null;
+        }
+    }
 
     [SerializeField] private GameObject parent;
-
-    private VisualDetector detector;
+    [SerializeField] private Transform armRotation;
+    [SerializeField] private Transform swingRotation;
+    [SerializeField] private VisualDetector detector;
+    [SerializeField] private float horizontalRotation = 150f;
+    [SerializeField] private float verticalRotation = 80f;
+    [SerializeField] private float armLength = 1f;
+    [SerializeField] private MeshCollider hitCollider;
+    
     private int targetIndex = 0;
     private List<Collider> inView = new List<Collider>() { null };
 
+    private CharacterSwivel state = CharacterSwivel.FREE;
+    private Vector3 lockDirection = Vector2.zero;
+
+    private Vector3 startRotation;
+    private Vector3 selectAngleLocation;
+    
+
     private void Start()
     {
-        detector = GetComponent<VisualDetector>();
         detector.RegisterListener(OnEnemyEntered, OnEnemyExited);
+        startRotation = armRotation.eulerAngles;
+        hitCollider.enabled = false;
     }
 
     public void OnEnemyEntered(Collider other)
     {
-        Debug.Log("Enemy entered view..." + other.name);
         inView.Add(other);
     }
 
     public void OnEnemyExited(Collider other)
     {
-        Debug.Log("Enemy exited view..." + other.name);
-        if (inView.Contains(other)) inView.Remove(other);
+        if (inView.Contains(other))
+            inView.Remove(other); 
     }
 
     public Collider FindClosestTarget()
@@ -51,28 +82,134 @@ public class ExperimentalMelee : MonoBehaviour
         return target;
     }
 
-    private void Update()
+    private void Update_TargetLock()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
             targetIndex++;
-
+            
             if (targetIndex >= inView.Count) targetIndex = 0;
         }
-        else if (Input.GetKeyDown(KeyCode.Q)) {
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
             targetIndex--;
 
             if (targetIndex < 0) targetIndex = inView.Count - 1;
         }
-        
 
         if (target)
         {
-            parent.transform.forward = (target.transform.position - parent.transform.position).normalized;
-            Debug.DrawLine(parent.transform.position, target.transform.position, Color.red);
-        } else
+            state = CharacterSwivel.TARGET_LOCK;
+            // check if our mouse is trying to break off target
+            var mousePos = Input.mousePosition;
+            var targetOnScreen = Camera.main.WorldToScreenPoint(target.transform.position);
+            
+            if (Vector2.Distance(mousePos, targetOnScreen) > Screen.width / 3)
+            {
+                state = CharacterSwivel.FREE;
+                targetIndex = 0;
+            }
+        }
+    }
+
+    private void Update_FixedLock()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            parent.transform.forward = LookAtMouse();
+            if (state == CharacterSwivel.FIXED) {
+                state = CharacterSwivel.FREE;
+                return;
+            }
+            state = CharacterSwivel.FIXED;
+            lockDirection = LookAtMouse();
+        }
+    }
+
+    float swingTime = 0.75f;
+    float swingDt = 0f;
+    bool swinging = false;
+
+    private void Update()
+    {
+        Update_TargetLock();
+        Update_FixedLock();
+
+        selectAngleLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        switch (state)
+        {
+            case CharacterSwivel.FREE:
+                parent.transform.forward = LookAtMouse();
+                break;
+            case CharacterSwivel.FIXED:
+                parent.transform.forward = lockDirection;
+                Update_SwordRotation();
+                break;
+            case CharacterSwivel.TARGET_LOCK:
+                var forward = (target.transform.position - parent.transform.position).normalized;
+                forward.y = 0f;
+                parent.transform.forward = forward;
+                Update_SwordRotation();
+                
+                Debug.DrawLine(parent.transform.position, target.transform.position, Color.red);
+                break;
+        }
+        
+
+        if (Input.GetMouseButtonDown(0) && swinging == false)
+        {
+            swinging = true;
+            hitCollider.enabled = true;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            armRotation.eulerAngles = Vector3.zero;
+        }
+
+        if (swinging)
+        {
+            swingRotation.localEulerAngles = Vector3.Lerp(Vector3.zero, new Vector3(0, -180, 0), swingDt);
+            swingDt += Time.deltaTime * 2f;
+
+            if (swingDt > swingTime)
+            {
+                swinging = false;
+                hitCollider.enabled = false;
+                swingDt = 0f;
+                swingRotation.localEulerAngles = Vector3.zero;
+            }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        float radius = state != CharacterSwivel.FREE ? 1 : 0;
+        Gizmos.DrawSphere(selectAngleLocation, radius);
+    }
+
+    private void Update_SwordRotation()
+    {
+        var mouseDirFromCharacter = DirectionToMouse();
+        var characterDirection = new Vector2(parent.transform.forward.x, parent.transform.forward.z);
+        float angle = Vector2.SignedAngle(mouseDirFromCharacter, characterDirection);
+
+        var xRot = 90 - Mathf.Abs(angle);
+        xRot = Mathf.Clamp(xRot, 0, verticalRotation);
+
+        var yRot = angle;
+        yRot = Mathf.Clamp(yRot, -(horizontalRotation / 2), horizontalRotation / 2);
+
+        var zRot = 90 - angle;
+        zRot = Mathf.Clamp(zRot, 0, 180);
+
+        var targetRot = new Vector3(-xRot, yRot, zRot);
+
+        armRotation.eulerAngles = parent.transform.eulerAngles + targetRot;
+        if (state == CharacterSwivel.FREE)
+        {
+            armRotation.eulerAngles += startRotation;
         }
     }
 
