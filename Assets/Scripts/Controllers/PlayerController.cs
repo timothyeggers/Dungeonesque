@@ -10,13 +10,13 @@ public class PlayerController : MonoBehaviour
     StateMachine machine;
 
     CharacterController controller;
-    WeaponSelector weaponSelector;
+    WeaponSelectorController weaponSelector;
 
     void Awake()
     {
         #region Get Component References
         controller = GetComponent<CharacterController>();
-        weaponSelector = GetComponent<WeaponSelector>();
+        weaponSelector = GetComponent<WeaponSelectorController>();
         #endregion
 
         machine = new StateMachine();

@@ -14,7 +14,7 @@ public class Entity : MonoBehaviour
     StateMachine machine;
 
     GameObject target;
-    Priorities priority = Priorities.Other;
+    PriorityType priority = PriorityType.Other;
 
     #region States
     IdleState idle;
@@ -49,9 +49,9 @@ public class Entity : MonoBehaviour
 
         // transition predicates
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.Space);
-        Func<bool> BeginInvestigateVisual = () => priority == Priorities.Visual;
-        Func<bool> BeginInvestigateAudio = () => priority == Priorities.Audio;
-        Func<bool> SpottedPriorityVisual = () => priority == Priorities.Visual && target != null;
+        Func<bool> BeginInvestigateVisual = () => priority == PriorityType.Visual;
+        Func<bool> BeginInvestigateAudio = () => priority == PriorityType.Audio;
+        Func<bool> SpottedPriorityVisual = () => priority == PriorityType.Visual && target != null;
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
         Func<bool> StartChase = () => target != null;
 
@@ -81,20 +81,24 @@ public class Entity : MonoBehaviour
     {
         Debug.Log($"Called from {sender}.");
 
-        if (sender.gameObject.GetComponent<AudioTrigger>())
+        // deprecrated, eventually have add target also send component so it knows priority
+        // probably move addtarget to priroitycontroller????
+/*        if (sender.gameObject.GetComponent<AudioTrigger>())
         {
             priority = Priorities.Audio;
             investigate.SetTargetPosition(sender.transform.position);
             Debug.Log("Entity will investigate audio notification.");
         }
 
+
+        
         if (sender.gameObject.GetComponent<VisualNotifier>())
         {
             priority = Priorities.Visual;
             investigate.SetTargetPosition(sender.transform.position);
             Debug.Log("Entity will investigate visual notification.");
         }
-
+*/
     } 
 
     public void ResetPriority()
