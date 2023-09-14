@@ -61,7 +61,8 @@ public class MeleeController : MonoBehaviour
             switch (meleeParameters)
             {
                 case SwingMeleeParameters swing:
-                    armPivot.transform.eulerAngles = characterPivot.transform.eulerAngles + GetRotationForSwing(swing, attackStartPos, attackEndPos);
+                    armPivot.transform.eulerAngles = characterPivot.transform.eulerAngles + 
+                        angleSelector.TranslatePositionToRotation(); //swing.MaxHorizontalRotation, swing.MaxVerticalRotation
                     break;
                 default:
                     break;
@@ -97,40 +98,6 @@ public class MeleeController : MonoBehaviour
                 swingPivot.transform.localEulerAngles = Vector3.zero;
             }
         }
-    }
-
-    //todo : implement function for getrotationstab, which modifies x and y position, and x rotation slighjtly (to point at target)
-
-
-    /// <summary>
-    /// Rotates X, Y, Z to have the swingPivot appropiately positioned for a swing attack.  
-    /// Rotation is determined by the direction from origin to the destination on a 2D plane.
-    /// </summary>
-    /// <param name="origin"></param>
-    /// <param name="destination"></param>
-    /// <returns></returns>
-    public Vector3 GetRotationForSwing(SwingMeleeParameters swing, Vector2 origin, Vector2 destination)
-    {
-        // dont touch this
-        var point = destination - origin;
-        float angle = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
-        int sign = Mathf.Abs(angle) > 90 ? -1 : 1;
-        Debug.Log(point);
-        // y rotation
-        var xMagnitude = point.x / angleSelector.MaxDistanceFromPivot;
-        xMagnitude = Mathf.Clamp(xMagnitude, -1, 1);
-
-        // x rotation
-        var yMagnitude = point.y / angleSelector.MaxDistanceFromPivot;
-        yMagnitude = Mathf.Clamp(yMagnitude, -1, 1);
-        Debug.Log("Magnitude " + new Vector2(xMagnitude, yMagnitude));
-        var yRot = xMagnitude * (swing.MaxHorizontalRotation / 2);
-        var xRot = -yMagnitude * (swing.MaxVerticalRotation / 2);
-        var zRot = yMagnitude * 90;
-
-        var targetRot = new Vector3(xRot, yRot, zRot);
-
-        return targetRot;
     }
 }
 /*

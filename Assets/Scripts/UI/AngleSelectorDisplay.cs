@@ -26,7 +26,8 @@ public class AngleSelectorDisplay : MonoBehaviour
     {
         // we want to offset the indicator by the direction (with magnitude) from the pivot
         // and then multiple that magnitude by the width of the wheel to scale it for the canvas.
-        var offset = controller.NormalizedPositionFromPivot * wheel.rectTransform.rect.width * controller.MaxDistanceFromPivot;
+        var offset = controller.DirectionFromPivot * controller.Radius;
+        offset *= wheel.rectTransform.rect.width;
         indicator.transform.localPosition = startPos + offset;
     }
 

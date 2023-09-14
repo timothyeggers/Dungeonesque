@@ -9,13 +9,14 @@ using static UnityEngine.UI.Image;
 /// </summary>
 public class AngleSelectorController : MonoBehaviour
 {
-    public float MaxDistanceFromPivot => maxDistanceFromPivot;
+    public float Radius => maxDistanceFromPivot;
     public float DistanceFromPivot => Vector2.Distance(pivot, indicator.transform.position);
-    public Vector2 NormalizedPositionFromPivot => (Vector2) indicator.transform.position - pivot;
+    public Vector2 DirectionFromPivot => (Vector2) indicator.transform.position - pivot;
 
     [Tooltip("Indicator is the point moving within the wheel.")]
     [SerializeField] private Rigidbody2D indicator;
 
+    [Tooltip("How far can the indicator travel from the center, a.k.a. the radius.")]
     [SerializeField] private float maxDistanceFromPivot = 0.70f;
     
     private Vector2 pivot => transform.position;
@@ -46,7 +47,8 @@ public class AngleSelectorController : MonoBehaviour
     {
         var point = destination - origin;
 
-        // normalize point magnitude to the scale of the wheel. 
+        // normalize point magnitude to the scale of the wheel. 100f is an abritrary number, representing the scale of 
+        // screen space to world space.
         point /= 100f;
         point = Vector2.ClampMagnitude(point, maxDistanceFromPivot);
         point += pivot;
@@ -58,5 +60,33 @@ public class AngleSelectorController : MonoBehaviour
         // ensure continuous detection is enabled for the indicator rigidbody2d.
         if (move == null) indicator.transform.position = point;
         else indicator.MovePosition(point);
+    }
+
+    public Vector3 TranslatePositionToRotation()
+    {
+        return TranslatePositionToRotation(180f, 180f);
+    }
+
+    public Vector3 TranslatePositionToRotation(float horizontalClamp, float verticalClamp)
+    {
+        var point = DirectionFromPivot * DistanceFromPivot;
+        var angle = Vector2.SignedAngle(Vector2.up, DirectionFromPivot.normalized);
+
+        point = Vector2.ClampMagnitude(point, 1);
+
+        var yRot = point.x * horizontalClamp;
+        var xRot = -point.y * verticalClamp;
+        var zRot = point.y + Mathf.Abs(point.y) * 180f;
+        zRot = 90 - angle;
+        
+        var targetRot = new Vector3(xRot, yRot, -zRot);
+
+        return targetRot;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, maxDistanceFromPivot);
     }
 }
