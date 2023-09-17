@@ -11,7 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71e5db70690a07843946518508f5b8a4, type: 3}
   m_Name: Swing Melee Parameter
-  m_EditorClassIdentifier: Assembly-CSharp::SwingMeleeParameters
-  DurationOfAttack: 1
-  MaxHorizontalRotation: 275
-  MaxVerticalRotation: 80
+  m_EditorClassIdentifier: 
+  AttackSpeed: 5
+  Agility: 9
+  MaxHorizontalRotation: 180
+  MaxVerticalRotation: 180

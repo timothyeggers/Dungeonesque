@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using Object = System.Object;
 
 
+[ExecuteInEditMode]
 [RequireComponent(typeof(MeshCollider), typeof(MeshFilter))]
 public class VisualDetector : MonoBehaviour, ITrigger
 {
@@ -55,7 +56,13 @@ public class VisualDetector : MonoBehaviour, ITrigger
     
     public void RegisterListener(OnTriggerEntered onTriggerEntered, OnTriggerExited onTriggerExited)
     {
-        this.onTriggerEntered.Add(onTriggerEntered);
-        this.onTriggerExited.Add(onTriggerExited);
+        if (!this.onTriggerEntered.Contains(onTriggerEntered)) this.onTriggerEntered.Add(onTriggerEntered);
+        if (!this.onTriggerExited.Contains(onTriggerExited)) this.onTriggerExited.Add(onTriggerExited);
+    }
+
+    public void RemoveListener(OnTriggerEntered onTriggerEntered, OnTriggerExited onTriggerExited)
+    {
+        if (this.onTriggerEntered.Contains(onTriggerEntered)) this.onTriggerEntered.Remove(onTriggerEntered);
+        if (this.onTriggerExited.Contains(onTriggerExited)) this.onTriggerExited.Remove(onTriggerExited);
     }
 }

@@ -19,6 +19,7 @@ public class StateMachine
 
 
     public void At(IState from, IState to, Func<bool> predicate) => AddTransition(from, to, predicate);
+    public void Any(IState to, Func<bool> predicate) => AddAnyTransition(to, predicate);
 
     public void Update()
    {

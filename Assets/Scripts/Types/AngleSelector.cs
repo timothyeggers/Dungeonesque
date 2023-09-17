@@ -1,13 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
 
-/// <summary>
-/// AngleSelector is used determining the valid angle of an attack, given a normal map texture.
-/// </summary>
-[CreateAssetMenu(fileName = "Default Weapon Angles", menuName = "Scriptable Objects/Weapon Angles")]
+[Obsolete("Replaced with AngleSelectorRB.")]
 public class AngleSelector : ScriptableObject
 {
     [Tooltip("This texture will determine if a point is in-bounds if it isn't over a black area.")]

@@ -12,8 +12,11 @@ public class Entity : MonoBehaviour
 
     NavMeshAgent agent;
     StateMachine machine;
+    
+    List<Collider> targets = new List<Collider>();
 
-    GameObject target;
+    Collider activeTarget;
+
     PriorityType priority = PriorityType.Other;
 
     #region States
@@ -36,12 +39,12 @@ public class Entity : MonoBehaviour
         #region Register Eyes and Ears
         if (eyes != null )
         {
-            eyes.RegisterListener(AddTarget, null);
+            eyes.RegisterListener(OnTargetEntered, OnTargetExited);
         }
 
         if (ears != null )
         {
-            ears.RegisterListener(AddTarget);
+            ears.RegisterListener(OnTargetEntered);
         }
         #endregion
 
@@ -51,9 +54,9 @@ public class Entity : MonoBehaviour
         Func<bool> BeginWander = () => Input.GetKeyDown(KeyCode.Space);
         Func<bool> BeginInvestigateVisual = () => priority == PriorityType.Visual;
         Func<bool> BeginInvestigateAudio = () => priority == PriorityType.Audio;
-        Func<bool> SpottedPriorityVisual = () => priority == PriorityType.Visual && target != null;
+        Func<bool> SpottedPriorityVisual = () => priority == PriorityType.Visual && activeTarget != null;
         Func<bool> StopInvestigation = () => Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) > 10f;
-        Func<bool> StartChase = () => target != null;
+        Func<bool> StartChase = () => activeTarget != null;
 
         // initialize states
         idle = new IdleState();
@@ -77,39 +80,21 @@ public class Entity : MonoBehaviour
         machine.SetState(idle);
     }
 
-    public void AddTarget(Collider sender)
-    {
-        Debug.Log($"Called from {sender}.");
-
-        // deprecrated, eventually have add target also send component so it knows priority
-        // probably move addtarget to priroitycontroller????
-/*        if (sender.gameObject.GetComponent<AudioTrigger>())
-        {
-            priority = Priorities.Audio;
-            investigate.SetTargetPosition(sender.transform.position);
-            Debug.Log("Entity will investigate audio notification.");
-        }
-
-
-        
-        if (sender.gameObject.GetComponent<VisualNotifier>())
-        {
-            priority = Priorities.Visual;
-            investigate.SetTargetPosition(sender.transform.position);
-            Debug.Log("Entity will investigate visual notification.");
-        }
-*/
-    } 
-
     public void ResetPriority()
     {
 
     }
 
-    public void SetTarget(GameObject target)
+    public void OnTargetEntered(Collider other)
     {
-        this.target = target;
-        chase.SetTarget(target);
+        if (!targets.Contains(other)) targets.Add(other);
+        Debug.Log("Soemthing with eneitty/?");
+        
+    }
+
+    public void OnTargetExited(Collider other)
+    {
+        if (targets.Contains(other)) targets.Remove(other);
     }
 
     void Update()

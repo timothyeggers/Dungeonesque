@@ -14,7 +14,7 @@ public enum PriorityType
 public interface IPriority
 {
     /// <summary>
-    /// Weight represents the priority of the target.  
+    /// Weight represents the priority of the activeTarget.  
     /// In PriorityController it's used to determine the time in seconds before it's no longer a priority.
     /// </summary>
     public int UUID { get; }

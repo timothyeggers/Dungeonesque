@@ -5,6 +5,6 @@ using UnityEngine;
 public class SwingMeleeParameters : MeleeParameters
 {
     [Header("Swing attack parameters.")]
-    public float MaxHorizontalRotation = 275f;
-    public float MaxVerticalRotation = 80f;
+    public float MaxHorizontalRotation = 180f;
+    public float MaxVerticalRotation = 180f;
 }

@@ -20,7 +20,6 @@ public class AngleSelectorController : MonoBehaviour
     [SerializeField] private float maxDistanceFromPivot = 0.70f;
     
     private Vector2 pivot => transform.position;
-    private Vector2 startPos; // indiciator start position
 
     public float IndicatorRadius { 
         get 
@@ -31,16 +30,6 @@ public class AngleSelectorController : MonoBehaviour
             }
             return 0.01f;
         }
-    }
-
-    private void Start()
-    {
-        startPos = indicator.transform.localPosition;
-    }
-
-    public void Reset()
-    {
-        indicator.transform.localPosition = startPos;
     }
     
     public void Move(Vector2 origin, Vector2 destination) 
@@ -84,9 +73,9 @@ public class AngleSelectorController : MonoBehaviour
         return targetRot;
     }
 
-    private void OnDrawGizmos()
+/*    private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, maxDistanceFromPivot);
-    }
+    }*/
 }

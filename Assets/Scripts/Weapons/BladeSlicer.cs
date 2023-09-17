@@ -22,7 +22,7 @@ public class BladeSlicer: MonoBehaviour, ITrigger
     public void OnTriggerEnter(Collider other)
     {
         onTriggerEntered.ForEach(x => x.Invoke(other));
-
+        Debug.Log(other.name);
         SliceInstantiate(other.gameObject, other.ClosestPoint(transform.position), bladeEdgeForward.transform.up);
     }
 
